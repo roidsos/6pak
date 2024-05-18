@@ -4,8 +4,8 @@
     "version": "6.9.0",
     "packages": [
         {
-            "name": "testy",
-            "url":"https://example.com"
+            "name": "test",
+            "url": "https://github.com/KevinAlavik/spak-example/archive/refs/heads/main.zip"
         }
     ]
 }
