@@ -8,7 +8,7 @@ pub fn help() !void {
 
 pub fn install(repos: []const r.Repo, name: []const u8) !void {
     const stdout = std.io.getStdOut().writer();
-    for(repos) |repo| {
+    for (repos) |repo| {
         for (repo.packages) |pak| {
             if (std.mem.eql(u8, name, pak.name)) {
                 try stdout.print("Installing {s}\n", .{pak.url});
