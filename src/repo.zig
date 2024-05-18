@@ -4,7 +4,10 @@ pub const Repo = struct{
     name: []const u8,
     description: []const u8,
     version: []const u8,
-    urls: []const []const u8,
+    packages: []const struct{
+        name: []const u8,
+        url: []const u8,
+    },
 };
 
 pub fn init(path: []const u8) !Repo {
