@@ -4,8 +4,8 @@
     "version": "6.9.0",
     "packages": [
         {
-            "name": "test",
-            "url": "https://github.com/KevinAlavik/spak-example/archive/refs/heads/main.zip"
+            "name": "nerdfonts-bigblueterminal",
+            "url": "https://raw.githubusercontent.com/roidsos/6pak/master/repos/test-pkgs/nerdfonts-bigblueterminal.pkg.json"
         }
     ]
 }
