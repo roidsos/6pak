@@ -2,9 +2,9 @@
     "name": "nerdfonts-bigblueterminal",
     "description": "The BigBlueTerminal font patched by Nerdfonts",
     "version": "1.0.0",
-    "auhor": "Ryan L McIntyre <ryan@ryanlmcintyre.com>",
-    "maintaner": "Lolguy91 <lolguy91@cock.email>",
+    "author": "Ryan L McIntyre <ryan@ryanlmcintyre.com>",
+    "maintainer": "Lolguy91 <lolguy91@cock.email>",
     "license": "CC-BY-SA-4.0",
-    "type" : "font-zipped",
+    "pkg_type" : "font-zipped",
     "url": "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/BigBlueTerminal.zip"
 }
