@@ -5,7 +5,11 @@ pub fn install(url: []const u8) !void {
     try stdout.print("Downloading the package...\n", .{});
 
     const allocator = std.heap.page_allocator;
-    const buffer = try getBuffFromUrl(allocator, url);
+    const buffer = getBuffFromUrl(allocator, url) catch |e| {
+        std.debug.print("could not download package.json: {s}\n", .{@errorName(e)});
+        std.process.exit(0xff);
+        return e; // this is here for the compiler
+    };
     defer allocator.free(buffer);
     std.debug.print("{s}\n", .{buffer});
 }
@@ -22,7 +26,7 @@ pub fn getBuffFromUrl(allocator: std.mem.Allocator, url: []const u8) ![]u8 {
     try request.send();
     try request.wait();
 
-    const body = request.reader().readAllAlloc(allocator, 8192) catch unreachable;
+    const body = try request.reader().readAllAlloc(allocator, 8192);
 
     return body;
 }
