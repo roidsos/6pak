@@ -29,9 +29,14 @@ pub fn main() !void {
     const repos = try conf.getRepos(config);
 
     if (std.mem.eql(u8, "install", command)) {
-        try comms.install(repos, args.next().?);
-        std.process.exit(0);
+        if (args.next()) |arg| {
+            try comms.install(repos, arg);
+            std.process.exit(0);
+        } else {
+            try stdout.print("Error: Install expects a sub command. Example: spak install <package>\n", .{});
+            std.process.exit(1);
+        }
     }
 
-    try stdout.print("Unknown command: {s}\n", .{command});
+    try stdout.print("Error: Unknown command: {s}\n", .{command});
 }

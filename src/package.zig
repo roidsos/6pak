@@ -72,7 +72,7 @@ pub fn install(url: []const u8) !void {
 
     switch (pkg.kind) {
         PkgTypes.FontZipped => {
-            data.zip_extract(pkg.data.url) catch |e| {
+            data.font_zip_extract(pkg) catch |e| {
                 try stdout.print("Error: Failed to extract font: \"{s}\"\n", .{@errorName(e)});
                 std.process.exit(0xff);
             };
@@ -86,7 +86,6 @@ pub fn install(url: []const u8) !void {
             std.process.exit(0xff);
         },
     }
-    try stdout.print("Done!\n", .{});
 }
 
 pub fn getBuffFromUrl(allocator: std.mem.Allocator, url: []const u8) ![]u8 {
