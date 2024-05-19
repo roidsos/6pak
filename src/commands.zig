@@ -4,7 +4,11 @@ const pkg = @import("package.zig");
 
 pub fn help() !void {
     const stdout = std.io.getStdOut().writer();
-    try stdout.print("help.\n", .{});
+    var args = std.process.args();
+    try stdout.print("Usage: {s} [command] <package>\n\n", .{args.next().?});
+    try stdout.print("Commands:\n\n", .{});
+    try stdout.print("  help            Disaplay this help message\n", .{});
+    try stdout.print("  install         Install a package!\n", .{});
 }
 
 pub fn install(repos: []const r.Repo, name: []const u8) !void {
