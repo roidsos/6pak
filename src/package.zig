@@ -1,4 +1,5 @@
 const std = @import("std");
+const zip_dot_zig = @import("vendor/zip.zig");
 
 pub const PkgJson = struct {
     name: []const u8,
@@ -42,13 +43,33 @@ pub fn install(url: []const u8) !void {
     defer allocator.free(confirm.?);
 
     if (!(std.mem.eql(u8, confirm.?, "y") or std.mem.eql(u8, confirm.?, "Y"))) {
-        std.process.exit(0xff);
+        std.process.exit(0);
     }
 
-    try stdout.print("Installing package...\n", .{});
 
+    if (std.mem.eql(u8, pkg.pkg_type, "font-zipped")) {
+        try stdout.print("Installing zipped font...\n", .{});
 
+        const zip = getBuffFromUrl(allocator, pkg.url) catch |e| {
+            std.debug.print("could not download font: {s}\n", .{@errorName(e)});
+            std.process.exit(0xff);
+            return e; // this is here for the compiler
+        };
+        defer allocator.free(zip);
 
+        const tmpdir = try std.fs.openDirAbsolute("/tmp", .{});
+        const fontsdir = try std.fs.cwd().makeOpenPath("fonts", .{});
+
+        try tmpdir.deleteFile("font.zip"); // make sure font.zip isnt already there
+        try tmpdir.writeFile("font.zip", zip);
+        const zipfile = try tmpdir.openFile("font.zip", .{});
+        
+        try zip_dot_zig.extract(fontsdir,zipfile.seekableStream(), .{});
+
+    } else {
+        try stdout.print("Error: Unknown package type\n", .{});
+        std.process.exit(0xff);
+    }
     try stdout.print("Done!\n", .{});
 
 }
@@ -59,13 +80,13 @@ pub fn getBuffFromUrl(allocator: std.mem.Allocator, url: []const u8) ![]u8 {
     var client = std.http.Client{ .allocator = allocator };
     defer client.deinit();
 
-    var request = try client.open(.GET, uri, .{ .server_header_buffer = try allocator.alloc(u8, 1024) });
+    var request = try client.open(.GET, uri, .{ .server_header_buffer = try allocator.alloc(u8, 4096) });
     defer request.deinit();
 
     try request.send();
     try request.wait();
 
-    const body = try request.reader().readAllAlloc(allocator, 8192);
+    const body = try request.reader().readAllAlloc(allocator, std.math.maxInt(usize));
 
     return body;
 }
