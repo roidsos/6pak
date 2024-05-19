@@ -22,9 +22,9 @@ pub const PkgTypes = enum {
     FlatBinary,
     Unknown,
 };
+const stdout = std.io.getStdOut().writer();
 
 pub fn install(url: []const u8) !void {
-    const stdout = std.io.getStdOut().writer();
     try stdout.print("Downloading the package...\n\n", .{});
 
     const allocator = std.heap.page_allocator;
@@ -101,7 +101,19 @@ pub fn getBuffFromUrl(allocator: std.mem.Allocator, url: []const u8) ![]u8 {
     try request.send();
     try request.wait();
 
-    const body = try request.reader().readAllAlloc(allocator, std.math.maxInt(usize));
+    if (request.response.content_length.? > 1024 * 1024 * 1024 * 4) { // file over 4Gib
+        // something fishy is going on, prompt the user to confirm that the file is correct
+        try stdout.print("Fie at \"{s}\" is over 4Gib, are you sure your repos are updated?? [y/n]: ", .{url});
+        const confirm = try std.io.getStdIn().reader().readUntilDelimiterOrEofAlloc(allocator, '\n', 1024);
+        defer allocator.free(confirm.?);
+
+        if (!(std.mem.eql(u8, confirm.?, "y") or std.mem.eql(u8, confirm.?, "Y"))) {
+            std.process.exit(0);
+        }
+    }
+    //std.debug.print("Downloaded {d} bytes from \"{s}\"\n", .{request.response.content_length.?, url});
+    // TODO: why is content_length bad?
+    const body = try request.reader().readAllAlloc(allocator, request.response.content_length.? * 2);
 
     return body;
 }
